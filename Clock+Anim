@@ -1,0 +1,86 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname A2212A) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ())))
+;Prints a clock face; minute and hour hand will be animated later in order to tell the current time
+;Defines rotation of numbers around a circumference, assigns rotated numbers to a variable, overlays small center circle, minute and hour hand, rotated numbers, and large circle over one another
+
+(require 2htdp/image)
+(define (a-number digit)
+    (overlay
+     (text (number->string digit) 12 "black")
+     (circle 10 "solid" "white")))
+ (define (place-and-turn digit dial)
+    (rotate 30
+            (overlay/align "center" "top"
+                           (a-number digit)
+                           dial)))
+(define (place-all-numbers dial)
+  (place-and-turn
+     2
+     (place-and-turn
+      1
+      (place-and-turn
+       12
+       (place-and-turn
+        11
+        (place-and-turn
+         10
+         (place-and-turn
+          9
+          (place-and-turn
+           8
+           (place-and-turn
+            7
+            (place-and-turn
+             6
+             (place-and-turn
+              5
+              (place-and-turn
+               4
+               (place-and-turn
+                3
+              dial)))))))))))))
+(define inner-dial
+    (underlay
+     (circle 40 "solid" "white")
+     (circle 30 "solid" "white")))
+(define (rotary-dial f)
+    (scale
+     f
+     (overlay
+      inner-dial
+      (rotate
+       -90
+       (place-all-numbers (circle 60 "solid" "white"))))))
+(overlay
+         (circle 4 "solid" "black")
+         (add-line
+         (add-line (line 0 0 "black")
+                   90 -4 145 1 "black")
+                   90 -1 175 0 "black")
+         (rotary-dial 2)
+         (circle 145 "solid" "black"))
+         
+
+;Animation code
+
+;(require 2htdp/image)
+;(require 2htdp/universe)
+
+;(define SLAV .)
+;(place-image SLAV 450 300 (empty-scene 900 600) )
+
+; draw-world: number -> scene
+; consumes the x-value of the chicken and creates the scene
+;(define (update-world x)
+ ;     	(- x 5) )
+;(define (draw-world x)
+ ; (place-image SLAV x 200 (empty-scene 400 400 )) )
+
+; update-world : number -> number
+; consumes the x-value of the chicken and updates it accordingly
+
+;(define INITIAL-VALUE 200)
+;(big-bang INITIAL-VALUE
+     ; 	(on-tick update-world (/ 1 5))
+      ;	(on-draw draw-world))
