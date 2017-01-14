@@ -1,0 +1,765 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname broken) (read-case-sensitive #t) (teachpacks ((lib "world.rkt" "teachpack" "htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "world.rkt" "teachpack" "htdp")))))
+;#lang racket
+(define-struct box (x y filled? filled-with number))
+
+(define BOX1 (make-box 100 100 false " " 1))
+(define BOX2 (make-box 300 100 false " " 2))
+(define BOX3 (make-box 500 100 false " " 3))
+(define BOX4 (make-box 100 300 false " " 4))
+(define BOX5 (make-box 300 300 false " " 5))
+(define BOX6 (make-box 500 300 false " " 6))
+(define BOX7 (make-box 100 500 false " " 7))
+(define BOX8 (make-box 300 500 false " " 8))
+(define BOX9 (make-box 500 500 false " " 9))
+
+#| TEMPLATE FOR BOX
+; box-func : box -> ?
+; consumes a box and produces ...
+(define (box-func a-box)
+  (box-x a-box)
+  (box-y a-box)
+  (box-filled? a-box)
+  (box-filled-with a-box)
+  (box-number a-box)
+  )
+|#
+
+; a world is (make-world string box box box box box box box box box)
+(define-struct world (turn box1 box2 box3 box4 box5 box6 box7 box8 box9))
+
+(define INITIAL-WORLD (make-world "X" BOX1 BOX2 BOX3 BOX4 BOX5 BOX6 BOX7 BOX8 BOX9))
+
+#|
+; world-func : world -> ?
+; consumes a world and produces ...
+(define (world-func a-world)
+  (world-turn a-world)
+  (box-func (world-box1 a-world))
+  (box-func (world-box2 a-world))
+  (box-func (world-box3 a-world))
+  (box-func (world-box4 a-world))
+  (box-func (world-box5 a-world))
+  (box-func (world-box6 a-world))
+  (box-func (world-box7 a-world))
+  (box-func (world-box8 a-world))
+  (box-func (world-box9 a-world))
+  )
+|#
+
+
+; draw-box : box scene -> scene
+; consumes a box and a scene and produces a scene with the box
+(define (draw-box a-box a-scene)
+ (place-image (text (box-filled-with a-box) 150 "red") (- (box-x a-box) 60) (- (box-y a-box) 127)
+              (place-image (rectangle 198 198 "outline" "black") (box-x a-box) (box-y a-box)
+                           (place-image (text (number->string (box-number a-box)) 10 "blue") (- (box-x a-box) 90) (- (box-y a-box) 99)
+                            a-scene))))
+
+;this check-expect was added in from the other, working program
+
+(check-expect(fill-box BOX1 "X")(make-box 100 100 true "X" 1))
+(check-expect(fill-box BOX5 "O")(make-box 300 300 true "O" 5))
+(check-expect(fill-box(make-box 300 100 true "O" 3)"X")(make-box 300 100 true "O" 3))
+
+#|
+; draw-world : world -> scene
+; consumes a world and produces a scene
+(define (draw-world a-world)
+  (cond
+  [(tic-tac-toe-x? a-world)(place-image(text "Press r to Restart" 20 "black")10 608(place-image(text "X Wins!" 40 "red")225 593                 
+   (draw-box (world-box1 a-world)
+   (draw-box (world-box2 a-world)
+   (draw-box (world-box3 a-world)
+   (draw-box (world-box4 a-world)
+   (draw-box (world-box5 a-world)
+   (draw-box (world-box6 a-world)
+   (draw-box (world-box7 a-world)
+   (draw-box (world-box8 a-world)
+   (draw-box (world-box8 a-world)
+   (draw-box (world-box9 a-world);
+            ; (place-image (text (string-append "turn: " (world-turn a-world)) 30 "blue") 0 600
+ (empty-scene 600 650)
+  ))))))))))))]))
+|#
+
+;draw-world: world -> scene
+;consumes a world and produces a scene
+(define(draw-world a-world)
+(cond
+  [(tic-tac-toe-x? a-world)(place-image(text "Press r to Restart" 20 "black")10 608(place-image(text "X Wins!" 40 "red")225 593                                      
+(draw-box(world-box1 a-world)
+(draw-box(world-box2 a-world)
+(draw-box(world-box3 a-world)
+(draw-box(world-box4 a-world)
+(draw-box(world-box5 a-world)
+(draw-box(world-box6 a-world)
+(draw-box(world-box7 a-world)
+(draw-box(world-box8 a-world)
+(draw-box(world-box9 a-world)
+(empty-scene 600 650))))))))))))]
+  [(tic-tac-toe-o? a-world)(place-image(text "Press r to Restart" 20 "black")10 608(place-image(text "O Wins!" 40 "red")225 593
+(draw-box(world-box1 a-world)
+(draw-box(world-box2 a-world)
+(draw-box(world-box3 a-world)
+(draw-box(world-box4 a-world)
+(draw-box(world-box5 a-world)
+(draw-box(world-box6 a-world)
+(draw-box(world-box7 a-world)
+(draw-box(world-box8 a-world)
+(draw-box(world-box9 a-world)
+(empty-scene 600 650))))))))))))]
+  
+  [(tie? a-world)
+   
+   (place-image(text "Press r to Restart" 20 "black")10 608
+                             
+               (place-image(text "Tie :(" 40 "red")230 593
+
+         (draw-box(world-box1 a-world)
+
+         (draw-box(world-box2 a-world)
+
+         (draw-box(world-box3 a-world)
+
+         (draw-box(world-box4 a-world)
+
+         (draw-box(world-box5 a-world)
+
+         (draw-box(world-box6 a-world)
+
+         (draw-box(world-box7 a-world)
+
+         (draw-box(world-box8 a-world)
+
+         (draw-box(world-box9 a-world)
+
+         (empty-scene 600 650))))))))))))]
+  
+  [else
+   (place-image(text "Press r to Restart" 20 "black")10 608
+                   
+               (place-image(text "Turn: " 40 "red")225 593
+                                                                           
+                           (place-image(text(world-turn a-world)40 "red")352 595
+
+         (draw-box(world-box1 a-world)                                                              
+
+         (draw-box(world-box2 a-world)
+
+         (draw-box(world-box3 a-world)
+
+         (draw-box(world-box4 a-world)
+
+         (draw-box(world-box5 a-world)
+
+         (draw-box(world-box6 a-world)
+
+         (draw-box(world-box7 a-world)
+
+         (draw-box(world-box8 a-world)
+
+         (draw-box(world-box9 a-world)
+
+         (empty-scene 600 650)
+         
+         ))))))))))))]
+  ))
+
+(check-expect (fill-box (make-box 100 100 false " " 10) "X") (make-box 100 100 true "X" 10))
+(check-expect (fill-box (make-box 100 100 true "O" 8) "X") (make-box 100 100 true "O" 8))
+
+;process-keys: world -> world
+;consumes a world and a key-event and updates it accordingly
+
+(define (process-keys a-world key-event)
+  
+  (cond
+    
+    [(and (game-over? a-world) (key=? key-event #\r)) INITIAL-WORLD]
+    
+    [(and (not(game-over? a-world)) (key=? key-event #\r)) INITIAL-WORLD]
+    
+    [else (if (not (game-over? a-world))
+              
+              (make-world
+  
+               (cond
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\1)(box-filled?(world-box1 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\2)(box-filled?(world-box2 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\3)(box-filled?(world-box3 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\4)(box-filled?(world-box4 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\5)(box-filled?(world-box5 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\6)(box-filled?(world-box6 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\7)(box-filled?(world-box7 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\8)(box-filled?(world-box8 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\9)(box-filled?(world-box9 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\1))"O"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\2))"O"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\3))"O"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\4))"O"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\5))"O"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\6))"O"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\7))"O"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\8))"O"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event #\9))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\1)(box-filled?(world-box1 a-world)))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\2)(box-filled?(world-box2 a-world)))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\3)(box-filled?(world-box3 a-world)))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\4)(box-filled?(world-box4 a-world)))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\5)(box-filled?(world-box5 a-world)))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\6)(box-filled?(world-box6 a-world)))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\7)(box-filled?(world-box7 a-world)))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\8)(box-filled?(world-box8 a-world)))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\9)(box-filled?(world-box9 a-world)))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\1))"X"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\2))"X"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\3))"X"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\4))"X"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\5))"X"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\6))"X"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\7))"X"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\8))"X"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event #\9))"X"]    
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad7)(box-filled?(world-box1 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad8)(box-filled?(world-box2 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad9)(box-filled?(world-box3 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad4)(box-filled?(world-box4 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad5)(box-filled?(world-box5 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad6)(box-filled?(world-box6 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad1)(box-filled?(world-box7 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad2)(box-filled?(world-box8 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad3)(box-filled?(world-box9 a-world)))"X"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad7))"O"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad8))"O"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad9))"O"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad4))"O"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad5))"O"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad6))"O"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad1))"O"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad2))"O"]
+
+[(and(string=?(world-turn a-world)"X")(key=? key-event 'numpad3))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numpad7)(box-filled?(world-box1 a-world)))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numpad8)(box-filled?(world-box2 a-world)))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numpad9)(box-filled?(world-box3 a-world)))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numpad4)(box-filled?(world-box4 a-world)))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numpad5)(box-filled?(world-box5 a-world)))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numbpad6)(box-filled?(world-box6 a-world)))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numpad1)(box-filled?(world-box7 a-world)))"O"] 
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numpad2)(box-filled?(world-box8 a-world)))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numbpad3)(box-filled?(world-box9 a-world)))"O"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numpad7))"X"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numpad8))"X"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numpad9))"X"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numpad4))"X"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numpad5))"X"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numpad6))"X"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numpad1))"X"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numpad2))"X"]
+
+[(and(string=?(world-turn a-world)"O")(key=? key-event 'numpad3))"X"]
+
+    [else(world-turn a-world)])
+  
+  (cond
+    
+    [(key=? key-event #\1) (fill-box (world-box1 a-world) (world-turn a-world))]
+    
+    [(key=? key-event 'numpad7) (fill-box (world-box1 a-world) (world-turn a-world))]
+    
+    [else (world-box1 a-world)])
+  
+ (cond
+   
+    [(key=? key-event #\2) (fill-box (world-box2 a-world) (world-turn a-world))] 
+ 
+    [(key=? key-event 'numpad8) (fill-box (world-box2 a-world) (world-turn a-world))]
+ 
+    [else (world-box2 a-world)])
+ 
+ (cond
+   
+    [(key=? key-event #\3) (fill-box (world-box3 a-world) (world-turn a-world))]
+    
+    [(key=? key-event 'numpad9) (fill-box (world-box3 a-world) (world-turn a-world))]
+    
+    [else (world-box3 a-world)])
+ 
+ (cond
+    
+    [(key=? key-event #\4) (fill-box (world-box4 a-world) (world-turn a-world))]
+    
+    [(key=? key-event 'numpad4) (fill-box (world-box4 a-world) (world-turn a-world))] 
+    
+    [else (world-box4 a-world)])
+ 
+ (cond
+    
+    [(key=? key-event #\5) (fill-box (world-box5 a-world) (world-turn a-world))]
+    
+    [(key=? key-event 'numpad5) (fill-box (world-box5 a-world) (world-turn a-world))]
+    
+    [else (world-box5 a-world)])
+ 
+ (cond
+    
+    [(key=? key-event #\6) (fill-box (world-box6 a-world) (world-turn a-world))]
+    
+    [(key=? key-event 'numpad6) (fill-box (world-box6 a-world) (world-turn a-world))]
+    
+    [else (world-box6 a-world)])
+ (cond
+   
+    [(key=? key-event #\7) (fill-box  (world-box7 a-world) (world-turn a-world))]
+    
+    [(key=? key-event 'numpad1) (fill-box (world-box7 a-world) (world-turn a-world))]
+    
+    [else (world-box7 a-world)])
+ 
+ (cond
+    
+    [(key=? key-event #\8) (fill-box (world-box8 a-world) (world-turn a-world))]
+    
+    [(key=? key-event 'numpad2) (fill-box (world-box8 a-world) (world-turn a-world))]
+    
+    [else (world-box8 a-world)])
+ 
+ (cond
+    
+    [(key=? key-event #\9) (fill-box (world-box9 a-world) (world-turn a-world))]
+    
+    [(key=? key-event 'numpad3) (fill-box (world-box9 a-world) (world-turn a-world))]
+   
+    [else (world-box9 a-world)])
+  
+ )
+              a-world)]
+    ))
+; fill-box : box string -> box boolean
+; consumes a box and a string and produces a box filled with the string and sets the filled? boolean to true
+(define (fill-box a-box fill)
+  (make-box
+    (box-x a-box)
+    (box-y a-box)
+    true 
+    (cond
+       [(box-filled? a-box) (box-filled-with a-box)]
+       [else fill]       
+)
+    (box-number a-box)
+))
+
+; process-keys : world key-event -> world
+; consumes a world and a key event and updates the world accordingly
+;(define (process-keys a-world key-event)
+  #|
+  (make-world
+   (cond
+     [ (or 
+        
+        (and (key=? key-event #\1) (boolean=? (box-filled? (world-box1 a-world)) false)) 
+        (and (key=? key-event #\2) (boolean=? (box-filled? (world-box2 a-world)) false))
+        (and (key=? key-event #\3) (boolean=? (box-filled? (world-box3 a-world)) false))
+        (and (key=? key-event #\4) (boolean=? (box-filled? (world-box4 a-world)) false))
+        (and (key=? key-event #\5) (boolean=? (box-filled? (world-box5 a-world)) false))
+        (and (key=? key-event #\6) (boolean=? (box-filled? (world-box6 a-world)) false))
+        (and (key=? key-event #\7) (boolean=? (box-filled? (world-box7 a-world)) false))
+        (and (key=? key-event #\8) (boolean=? (box-filled? (world-box8 a-world)) false))
+        (and (key=? key-event #\9) (boolean=? (box-filled? (world-box9 a-world)) false))
+     )
+       ;is the issue with this part of code?
+   (cond
+     [(string=? (world-turn a-world) "X") "O"]
+     [(string=? (world-turn a-world) "O") "X"]
+    ; [(string=? (world-turn a-world) "X") "X"]
+     [else (world-turn a-world)]
+)]
+   [else (world-turn a-world)]
+   )
+  (cond
+    [(key=? key-event #\1) (fill-box (world-box1 a-world) (world-turn a-world))]
+    [else (world-box1 a-world)]
+)
+ (cond
+    [(key=? key-event #\2) (fill-box (world-box2 a-world) (world-turn a-world))]
+    [else (world-box2 a-world)]
+)
+ (cond
+    [(key=? key-event #\3) (fill-box (world-box3 a-world) (world-turn a-world))]
+    [else (world-box3 a-world)]
+)
+ (cond
+    [(key=? key-event #\4) (fill-box (world-box4 a-world) (world-turn a-world))]
+    [else (world-box4 a-world)]
+)
+ (cond
+    [(key=? key-event #\5) (fill-box (world-box5 a-world) (world-turn a-world))]
+    [else (world-box5 a-world)]
+)
+ (cond
+    [(key=? key-event #\6) (fill-box (world-box6 a-world) (world-turn a-world))]
+    [else (world-box6 a-world)]
+)
+ (cond
+    [(key=? key-event #\7) (fill-box (world-box7 a-world) (world-turn a-world))]
+    [else (world-box7 a-world)]
+)
+ (cond
+    [(key=? key-event #\8) (fill-box (world-box8 a-world) (world-turn a-world))]
+    [else (world-box8 a-world)]
+)
+ ;an error was here: ...(world-box8 a-world)... -> ...world-box9 a-world)...
+ (cond
+    [(key=? key-event #\9) (fill-box (world-box9 a-world) (world-turn a-world))]
+    [else (world-box9 a-world)]
+)
+))
+
+; tic-tac-toe? : box box box -> boolean
+; consumes three boxes and determines if the are filled with the same mark
+
+(define (tic-tac-toe? a-box1 a-box2 a-box3)
+ (or
+  (string=? (box-filled-with a-box1) (box-filled-with a-box2) (box-filled-with a-box3) "X")
+  (string=? (box-filled-with a-box1) (box-filled-with a-box2) (box-filled-with a-box3) "O")
+  
+   ))
+|#
+
+; game-over? : world -> boolean
+; consumes a world and ends the game when there is a successful tic-tac-toe
+#|
+(define (game-over? a-world)
+  (or
+  (tic-tac-toe? (world-box1 a-world) (world-box2 a-world) (world-box3 a-world))
+  (tic-tac-toe? (world-box4 a-world) (world-box5 a-world) (world-box6 a-world))
+  (tic-tac-toe? (world-box7 a-world) (world-box8 a-world) (world-box9 a-world))
+  (tic-tac-toe? (world-box1 a-world) (world-box4 a-world) (world-box7 a-world))
+  (tic-tac-toe? (world-box2 a-world) (world-box5 a-world) (world-box8 a-world))
+  (tic-tac-toe? (world-box3 a-world) (world-box6 a-world) (world-box9 a-world))
+  (tic-tac-toe? (world-box1 a-world) (world-box5 a-world) (world-box9 a-world))
+  (tic-tac-toe? (world-box3 a-world) (world-box5 a-world) (world-box7 a-world))
+  ))
+
+|#
+
+;game-over?:world->boolean
+;consumes a world and deterines if the game is over
+
+(define(game-over? a-world)
+  (or
+   
+  (tic-tac-toe-x? a-world)
+  
+  (tic-tac-toe-o? a-world)
+  
+  (tie? a-world)
+  
+  ))
+
+(check-expect (update-world (make-world "O" (fill-box BOX1 "X")
+                                        (fill-box BOX2 "O")
+                                        (fill-box BOX3 "X")
+                                        (fill-box BOX4 "X")
+                                        (fill-box BOX5 "O")
+                                        (fill-box BOX6 "X")
+                                        (fill-box BOX7 "O")
+                                        (fill-box BOX8 "O")
+                                        (fill-box BOX9 "O")))
+                            (make-world "X" (fill-box BOX1 "X")
+                                        (fill-box BOX2 "O")
+                                        (fill-box BOX3 "X")
+                                        (fill-box BOX4 "X")
+                                        (fill-box BOX5 "O")
+                                        (fill-box BOX6 "X")
+                                        (fill-box BOX7 "O")
+                                        (fill-box BOX8 "O")
+                                        (fill-box BOX9 "O")))
+                                       
+; update-world : world -> world
+; consumes a world updates it accordingly
+(define (update-world a-world)
+  (cond
+    [(string=? (world-turn a-world) "X") a-world]
+    [else
+     (cond
+       [(or (game-over? (process-keys a-world #\1))
+            (game-over? (process-keys a-world #\2))
+            (game-over? (process-keys a-world #\3))
+            (game-over? (process-keys a-world #\4))
+            (game-over? (process-keys a-world #\5))
+            (game-over? (process-keys a-world #\6))
+            (game-over? (process-keys a-world #\7))
+            (game-over? (process-keys a-world #\8))
+            ;missing box 9 here, though fixing this error has made no noticible change to the program
+            (game-over? (process-keys a-world #\9)))
+        (make-world
+         "X"
+         (cond
+           [(game-over? (process-keys a-world #\1)) (fill-box (world-box1 a-world) "O")]
+           [else (world-box1 a-world)])
+         (cond
+           [(game-over? (process-keys a-world #\2)) (fill-box (world-box2 a-world) "O")]
+           [else (world-box2 a-world)])
+         (cond
+           [(game-over? (process-keys a-world #\3)) (fill-box (world-box3 a-world) "O")]
+           [else (world-box3 a-world)])
+         (cond
+           [(game-over? (process-keys a-world #\4)) (fill-box (world-box4 a-world) "O")]
+           [else (world-box4 a-world)])
+         (cond
+           [(game-over? (process-keys a-world #\5)) (fill-box (world-box5 a-world) "O")]
+           [else (world-box5 a-world)])
+         (cond
+           [(game-over? (process-keys a-world #\6)) (fill-box (world-box6 a-world) "O")]
+           [else (world-box6 a-world)])
+         (cond
+           [(game-over? (process-keys a-world #\7)) (fill-box (world-box7 a-world) "O")]
+           [else (world-box7 a-world)])
+         (cond
+           [(game-over? (process-keys a-world #\8)) (fill-box (world-box8 a-world) "O")]
+           [else (world-box8 a-world)])
+         (cond
+           [(game-over? (process-keys a-world #\9)) (fill-box (world-box9 a-world) "O")]
+           [else (world-box9 a-world)])
+         )
+        ]
+       [(or (game-over? (process-keys (change-turn a-world) #\1))
+            (game-over? (process-keys (change-turn a-world) #\2))
+            (game-over? (process-keys (change-turn a-world) #\3))
+            (game-over? (process-keys (change-turn a-world) #\4))
+            (game-over? (process-keys (change-turn a-world) #\5))
+            (game-over? (process-keys (change-turn a-world) #\6))
+            (game-over? (process-keys (change-turn a-world) #\7))
+            (game-over? (process-keys (change-turn a-world) #\8))
+            (game-over? (process-keys (change-turn a-world) #\9)))
+        (make-world
+         "X"
+         (cond
+           [(game-over? (process-keys (change-turn a-world) #\1)) (fill-box (world-box1 a-world) "O")]
+           [else (world-box1 a-world)])
+         (cond
+           [(game-over? (process-keys (change-turn a-world) #\2)) (fill-box (world-box2 a-world) "O")]
+           [else (world-box2 a-world)])
+         (cond
+           [(game-over? (process-keys (change-turn a-world) #\3)) (fill-box (world-box3 a-world) "O")]
+           [else (world-box3 a-world)])
+         (cond
+           [(game-over? (process-keys (change-turn a-world) #\4)) (fill-box (world-box4 a-world) "O")]
+           [else (world-box4 a-world)])
+         (cond
+           [(game-over? (process-keys (change-turn a-world) #\5)) (fill-box (world-box5 a-world) "O")]
+           [else (world-box5 a-world)])
+         (cond
+           [(game-over? (process-keys (change-turn a-world) #\6)) (fill-box (world-box6 a-world) "O")]
+           [else (world-box6 a-world)])
+         (cond
+           [(game-over? (process-keys (change-turn a-world) #\7)) (fill-box (world-box7 a-world) "O")]
+           [else (world-box7 a-world)])
+         (cond
+           [(game-over? (process-keys (change-turn a-world) #\8)) (fill-box (world-box8 a-world) "O")]
+           [else (world-box8 a-world)])
+         (cond
+           [(game-over? (process-keys (change-turn a-world) #\9)) (fill-box (world-box9 a-world) "O")]
+           [else (world-box9 a-world)])
+         )
+        ]
+       [else a-world])]))
+
+; change-turn : world -> world
+; consumes a world and changes the turn, leaves the rest of the world unchanged
+(define (change-turn a-world)
+  (make-world
+   (cond
+     [(string=? (world-turn a-world) "X") "O"]
+     [(string=? (world-turn a-world) "O") "X"])
+   (world-box1 a-world)
+   (world-box2 a-world)
+   (world-box3 a-world)
+   (world-box4 a-world)
+   (world-box5 a-world)
+   (world-box6 a-world)
+   (world-box7 a-world)
+   (world-box8 a-world)
+   (world-box9 a-world)
+  ))
+
+;tic-tac-toe-x?:world->boolean
+;consumes a world and determines if x has a tic tac toe
+
+(define(tic-tac-toe-x? a-world)
+  (or
+   
+  (and (string=?(box-filled-with(world-box1 a-world))"X") (string=?(box-filled-with(world-box2 a-world))"X") (string=?(box-filled-with(world-box3 a-world))"X") )
+  
+  (and (string=?(box-filled-with(world-box4 a-world))"X") (string=?(box-filled-with(world-box5 a-world))"X") (string=?(box-filled-with(world-box6 a-world))"X") )
+  
+  (and (string=?(box-filled-with(world-box7 a-world))"X") (string=?(box-filled-with(world-box8 a-world))"X") (string=?(box-filled-with(world-box9 a-world))"X") )
+  
+  (and (string=?(box-filled-with(world-box1 a-world))"X") (string=?(box-filled-with(world-box5 a-world))"X") (string=?(box-filled-with(world-box9 a-world))"X") )
+  
+  (and (string=?(box-filled-with(world-box1 a-world))"X") (string=?(box-filled-with(world-box4 a-world))"X") (string=?(box-filled-with(world-box7 a-world))"X") )
+  
+  (and (string=?(box-filled-with(world-box2 a-world))"X") (string=?(box-filled-with(world-box5 a-world))"X") (string=?(box-filled-with(world-box8 a-world))"X") )
+  
+  (and (string=?(box-filled-with(world-box3 a-world))"X") (string=?(box-filled-with(world-box6 a-world))"X") (string=?(box-filled-with(world-box9 a-world))"X") )
+  
+  (and (string=?(box-filled-with(world-box3 a-world))"X") (string=?(box-filled-with(world-box5 a-world))"X") (string=?(box-filled-with(world-box7 a-world))"X") )
+  
+  ))
+
+;tic-tac-toe-o?:world->boolean
+;consumes a world and determines if o has a tic tac toe
+
+(define(tic-tac-toe-o? a-world)
+  (or
+   
+   (and (string=?(box-filled-with(world-box1 a-world))"O") (string=?(box-filled-with(world-box2 a-world))"O") (string=?(box-filled-with(world-box3 a-world))"O") )
+   
+  (and (string=?(box-filled-with(world-box4 a-world))"O") (string=?(box-filled-with(world-box5 a-world))"O") (string=?(box-filled-with(world-box6 a-world))"O") )
+  
+  (and (string=?(box-filled-with(world-box7 a-world))"O") (string=?(box-filled-with(world-box8 a-world))"O") (string=?(box-filled-with(world-box9 a-world))"O"))
+   
+  (and (string=?(box-filled-with(world-box1 a-world))"O") (string=?(box-filled-with(world-box5 a-world))"O") (string=?(box-filled-with(world-box9 a-world))"O") )
+  
+  (and (string=?(box-filled-with(world-box1 a-world))"O") (string=?(box-filled-with(world-box4 a-world))"O") (string=?(box-filled-with(world-box7 a-world))"O") )
+  
+  (and (string=?(box-filled-with(world-box2 a-world))"O") (string=?(box-filled-with(world-box5 a-world))"O") (string=?(box-filled-with(world-box8 a-world))"O") )
+  
+  (and (string=?(box-filled-with(world-box3 a-world))"O") (string=?(box-filled-with(world-box6 a-world))"O") (string=?(box-filled-with(world-box9 a-world))"O") )
+  
+  (and (string=?(box-filled-with(world-box3 a-world))"O") (string=?(box-filled-with(world-box5 a-world))"O") (string=?(box-filled-with(world-box7 a-world))"O") ) 
+  
+  ))
+
+;copied and pasted this from original, working program
+
+;tie?:world->boolean
+;consumes a world and determines if there is a tie
+
+(define(tie? a-world)
+  (and
+   (boolean=?(tic-tac-toe-x? a-world)false)
+   
+   (boolean=?(tic-tac-toe-o? a-world)false) 
+   
+   (box-filled?(world-box1 a-world)) 
+   
+   (box-filled?(world-box2 a-world)) 
+   
+   (box-filled?(world-box3 a-world))
+   
+   (box-filled?(world-box4 a-world)) 
+   
+   (box-filled?(world-box5 a-world))
+   
+   (box-filled?(world-box6 a-world)) 
+   
+   (box-filled?(world-box7 a-world)) 
+   
+   (box-filled?(world-box8 a-world)) 
+   
+   (box-filled?(world-box9 a-world)) 
+   
+   ))
+
+;WHAT THE HECK
+
+;game-over?:world->boolean
+;consumes a world and deterines if the game is over
+
+#|
+
+(define(game-over? a-world)
+  (or
+   
+  (tic-tac-toe-x? a-world)
+  
+  (tic-tac-toe-o? a-world)
+  
+  (tie? a-world)
+  
+  ))
+
+|#
+
+(big-bang 600 650 (/ 1.0 28) INITIAL-WORLD)
+(on-redraw draw-world)
+(on-key-event process-keys)
+
+;ERROR HERE
+
+;(on-tick-event update-world)
+;(stop-when game-over?)
