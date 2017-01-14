@@ -1,0 +1,65 @@
+#|~*~*Animation code*~*~ 
+
+(require picturing-programs)
+
+(run-movie 0.1 (list . . . .))
+
+|#
+
+
+(require 2htdp/image)
+(define (a-number digit)
+    (overlay
+     (text (number->string digit) 12 "black")
+     (circle 10 "solid" "white")))
+ (define (place-and-turn digit dial)
+    (rotate 30
+            (overlay/align "center" "top"
+                           (a-number digit)
+                           dial)))
+(define (place-all-numbers dial)
+  (place-and-turn
+     2
+     (place-and-turn
+      1
+      (place-and-turn
+       12
+       (place-and-turn
+        11
+        (place-and-turn
+         10
+         (place-and-turn
+          9
+          (place-and-turn
+           8
+           (place-and-turn
+            7
+            (place-and-turn
+             6
+             (place-and-turn
+              5
+              (place-and-turn
+               4
+               (place-and-turn
+                3
+              dial)))))))))))))
+(define inner-dial
+    (underlay
+     (circle 40 "solid" "white")
+     (circle 30 "solid" "white")))
+(define (rotary-dial f)
+    (scale
+     f
+     (overlay
+      inner-dial
+      (rotate
+       -90
+       (place-all-numbers (circle 60 "solid" "white"))))))
+(overlay
+         (circle 4 "solid" "black")
+         (add-line
+         (add-line (line 0 0 "black")
+                   90 -4 145 1 "black")
+                   90 -1 175 0 "black")
+         (rotary-dial 2)
+         (circle 145 "solid" "black"))
