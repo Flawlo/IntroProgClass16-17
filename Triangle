@@ -1,0 +1,11 @@
+#lang racket
+
+; A picture
+(require 2htdp/image)
+(let happy-face ([n 5])
+  (cond
+    [(zero? n) (triangle 2 'outline 'red)]
+    [else (define t (happy-face (- n 1)))
+          (freeze (above t t (beside t t t )))]))
+
+;Did I just rock your socks?>??????!?!?!?!?!?!?!?!?!?!?!?!?!?!
