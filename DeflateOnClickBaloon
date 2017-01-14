@@ -1,0 +1,11 @@
+#lang racket
+
+;#lang htdp/bsl 
+
+; Any key inflates the balloon
+(require 2htdp/image) (require 2htdp/universe)
+(define (flawlo b) (square b "solid" "blue"))
+(define (blow-up b) (max (+ b 5)))
+(define (deflate b k) (- b 1) 1)
+(big-bang 50 (on-key deflate) (on-tick blow-up 1)
+          (to-draw flawlo 200 200))
