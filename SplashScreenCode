@@ -1,0 +1,18 @@
+(require framework/splash)
+(require images/logos)
+
+;#lang racket/base
+ (require racket/runtime-path
+          (for-syntax racket/base) ; for build-path for runtime-path
+          framework/splash
+          )
+
+ (define-runtime-path splash-path
+   (build-path "img" "splash.png"))
+
+(start-splash splash-path "My Project" 200) ; frame name, default width
+
+(dynamic-require "my-project.rkt" #f)
+
+(shutdown-splash)
+(close-splash)
